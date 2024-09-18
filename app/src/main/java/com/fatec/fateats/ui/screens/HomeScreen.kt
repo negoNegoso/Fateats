@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fatec.fateats.model.Product
+import com.fatec.fateats.sampledata.sampleCandies
+import com.fatec.fateats.sampledata.sampleDrinks
 import com.fatec.fateats.sampledata.sampleProducts
 import com.fatec.fateats.sampledata.sampleSections
 import com.fatec.fateats.ui.components.CardProductItem
@@ -25,44 +27,85 @@ import com.fatec.fateats.ui.components.ProductsSection
 import com.fatec.fateats.ui.components.SearchTextField
 import com.fatec.fateats.ui.theme.FateatsTheme
 
-@Composable
-fun HomeScreen(
-    sections: Map<String, List<Product>>,
-    searchText: String = ""
+
+
+class HomeScreenUiState(
+    val sections: Map<String, List<Product>> = emptyMap(),
+    val searchedProducts: List<Product> = emptyList(),
+    val searchText: String = "",
+    val onSearchChange: (String) -> Unit = {}
 ) {
-    Column {
-        var text by remember {
-            mutableStateOf(searchText)
-        }
-        SearchTextField(
+    fun isShowSections(): Boolean {
+        return searchText.isBlank()
+    }
+
+}
+
+@Composable
+fun HomeScreen(products: List<Product>) {
+    val sections = mapOf(
+        "Todos produtos" to products,
+        "Promoções" to sampleDrinks + sampleCandies,
+        "Doces" to sampleCandies,
+        "Bebidas" to sampleDrinks
+    )
+    var text by remember {
+        mutableStateOf("")
+    }
+
+    fun containsInNameOrDescrioption() = { product: Product ->
+        product.name.contains(
+            text,
+            ignoreCase = true,
+        ) || product.description?.contains(
+            text,
+            ignoreCase = true,
+        ) ?: false
+    }
+
+    val searchedProducts = remember(text, products) {
+        if (text.isNotBlank()) {
+            sampleProducts.filter(containsInNameOrDescrioption()) +
+                    products.filter(containsInNameOrDescrioption())
+        } else emptyList()
+    }
+
+    val state = remember(products, text) {
+        HomeScreenUiState(
+            sections = sections,
+            searchedProducts = searchedProducts,
             searchText = text,
             onSearchChange = {
                 text = it
-            },
+            }
+        )
+    }
+    HomeScreen(state = state)
+}
+
+@Composable
+fun HomeScreen(
+    state: HomeScreenUiState = HomeScreenUiState()
+) {
+    Column {
+        val sections = state.sections
+        val text = state.searchText
+        val searchedProducts = state.searchedProducts
+        SearchTextField(
+            searchText = text,
+            onSearchChange = state.onSearchChange,
             Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
         )
-        val searchedProducts = remember(text) {
-            if (text.isNotBlank()) {
-                sampleProducts.filter { product ->
-                    product.name.contains(
-                        text,
-                        ignoreCase = true,
-                    ) ||
-                            product.description?.contains(
-                                text,
-                                ignoreCase = true,
-                            ) ?: false
-                }
-            } else emptyList()
-        }
+
         LazyColumn(
-            Modifier.fillMaxSize(),
+            Modifier
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            if (text.isBlank()) {
+            if (state.isShowSections()) {
                 for (section in sections) {
                     val title = section.key
                     val products = section.value
@@ -90,7 +133,22 @@ fun HomeScreen(
 private fun HomeScreenPreview() {
     FateatsTheme {
         Surface {
-            HomeScreen(sampleSections)
+            HomeScreen(HomeScreenUiState(sections = sampleSections))
+        }
+    }
+}
+
+@Preview
+@Composable
+fun HomeScreenWithSearchTextPreview() {
+    FateatsTheme {
+        Surface {
+            HomeScreen(
+                state = HomeScreenUiState(
+                    searchText = "a",
+                    sections = sampleSections
+                ),
+            )
         }
     }
 }
