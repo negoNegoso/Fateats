@@ -1,6 +1,7 @@
 package com.fatec.fateats.sampledata
 
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
+import com.fatec.fateats.extensions.toBrazilianCurrency
 import com.fatec.fateats.model.Product
 import java.math.BigDecimal
 

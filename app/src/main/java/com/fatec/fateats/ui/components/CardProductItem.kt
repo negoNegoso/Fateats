@@ -65,6 +65,7 @@ fun CardProductItem(
                 Text(
                     text = product.price.toBrazilianCurrency(), color = Color.White
                 )
+
             }
             product.description?.let {
                 Text(

@@ -23,6 +23,7 @@ import com.fatec.fateats.sampledata.sampleDrinks
 import com.fatec.fateats.sampledata.sampleProducts
 import com.fatec.fateats.sampledata.sampleSections
 import com.fatec.fateats.ui.components.CardProductItem
+import com.fatec.fateats.ui.components.CustomTopAppBar
 import com.fatec.fateats.ui.components.ProductsSection
 import com.fatec.fateats.ui.components.SearchTextField
 import com.fatec.fateats.ui.theme.FateatsTheme
@@ -91,6 +92,7 @@ fun HomeScreen(
         val sections = state.sections
         val text = state.searchText
         val searchedProducts = state.searchedProducts
+        CustomTopAppBar(title = "Home")
         SearchTextField(
             searchText = text,
             onSearchChange = state.onSearchChange,

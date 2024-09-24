@@ -37,6 +37,7 @@ import coil.compose.AsyncImage
 import com.fatec.fateats.R
 import com.fatec.fateats.dao.ProductDao
 import com.fatec.fateats.model.Product
+import com.fatec.fateats.ui.components.CustomTopAppBar
 import com.fatec.fateats.ui.theme.FateatsTheme
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -65,6 +66,7 @@ class ProductFormActivity : ComponentActivity() {
 fun ProductFormScreen(
     onSaveClick: (Product) -> Unit = {}
 ) {
+    CustomTopAppBar(title = "Criar Produto")
     Column(
         Modifier
             .fillMaxSize()
@@ -73,11 +75,14 @@ fun ProductFormScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Spacer(modifier = Modifier)
-        Text(
-            text = "Criando o produto",
-            Modifier.fillMaxWidth(),
-            fontSize = 28.sp,
-        )
+        val t = Modifier.fillMaxSize()
+//        Text(
+//            text = "Criando o produto",
+//            modifier = t,
+//            fontSize = 28.sp,
+//        )
+
+
         var url by remember {
             mutableStateOf("")
         }
